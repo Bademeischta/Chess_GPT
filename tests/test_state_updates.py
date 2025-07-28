@@ -11,6 +11,7 @@ def test_en_passant_and_halfmove_after_double_push():
     assert board.state.halfmove_clock == 0
 
 
+
 def test_en_passant_cleared_after_single_push():
     board = Board()
     board.make_move(rules.Move.from_uci("e2e4"))
@@ -26,6 +27,7 @@ def test_halfmove_clock_increments_on_quiet_move():
     assert board.state.halfmove_clock == 1
 
 
+
 def test_fullmove_increment_after_black_move():
     board = Board()
     board.make_move(rules.Move.from_uci("e2e4"))
@@ -39,6 +41,7 @@ def test_king_move_removes_castling_rights():
     board.make_move(rules.Move.from_uci("e1e2"))
     assert "K" not in board.state.castling_rights
     assert "Q" not in board.state.castling_rights
+
 
 
 def test_rook_move_removes_castling_rights():
@@ -74,3 +77,4 @@ def test_to_move_switches_after_move():
     current = board.state.to_move
     board.make_move(rules.Move.from_uci("e2e4"))
     assert board.state.to_move != current
+

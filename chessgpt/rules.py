@@ -355,7 +355,11 @@ def apply_move(state: State, move: Move) -> None:
         elif move.to_sq == 0 * 8 + 0:
             rights.discard('q')
         elif move.to_sq == 0 * 8 + 7:
+
             rights.discard('k')
+
+            state.castling_rights.discard('k')
+
     mover = state.to_move
     # en passant square
     if piece.lower() == 'p' and abs(row_to - row_from) == 2:
@@ -373,6 +377,11 @@ def apply_move(state: State, move: Move) -> None:
     # fullmove number
     if mover == 'b':
         state.fullmove_number += 1
+
+
+    # keep castling rights ordered as set
+    state.castling_rights = {c for c in "KQkq" if c in state.castling_rights}
+
 
     # switch side
     state.to_move = opposite(state.to_move)
