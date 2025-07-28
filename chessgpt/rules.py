@@ -289,7 +289,9 @@ def generate_legal_moves(state: State) -> List[Move]:
     for mv in generate_pseudo_legal_moves(state):
         tmp = state.clone()
         apply_move(tmp, mv)
-        if not in_check(tmp, opposite(state.to_move)):
+        # nach apply_move ist tmp.to_move der Gegner,
+        # also opposite(tmp.to_move) ist der Spieler, der gezogen hat
+        if not in_check(tmp, opposite(tmp.to_move)):
             moves.append(mv)
     return moves
 
