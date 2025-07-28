@@ -373,9 +373,6 @@ def apply_move(state: State, move: Move) -> None:
     if mover == 'b':
         state.fullmove_number += 1
 
-    # keep castling rights ordered as set
-    state.castling_rights = {c for c in "KQkq" if c in state.castling_rights}
-
     # switch side
     state.to_move = opposite(state.to_move)
 
