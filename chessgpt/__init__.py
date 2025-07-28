@@ -1,9 +1,4 @@
+from .board import Board, ChessBoard
+from . import rules
 
-from .board import Board
-
-__all__ = ["Board"]
-
-from .board import ChessBoard
-
-__all__ = ['ChessBoard']
-
+__all__ = ["Board", "ChessBoard", "rules"]
