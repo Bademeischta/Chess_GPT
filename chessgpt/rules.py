@@ -299,6 +299,7 @@ def generate_legal_moves(state: State) -> List[Move]:
 def apply_move(state: State, move: Move) -> None:
     board = state.board
     piece = board[move.from_sq]
+    rights = set(state.castling_rights)
     row_from, col_from = divmod(move.from_sq, 8)
     row_to, col_to = divmod(move.to_sq, 8)
     capture = board[move.to_sq] is not None
@@ -330,45 +331,53 @@ def apply_move(state: State, move: Move) -> None:
             board[rook_from] = None
         # update castling rights
         if state.to_move == 'w':
-            state.castling_rights.discard('K')
-            state.castling_rights.discard('Q')
+            rights.discard('K')
+            rights.discard('Q')
         else:
-            state.castling_rights.discard('k')
-            state.castling_rights.discard('q')
+            rights.discard('k')
+            rights.discard('q')
     # rook movement affects rights
     if piece.lower() == 'r':
         if move.from_sq == 7 * 8 + 0:
-            state.castling_rights.discard('Q')
+            rights.discard('Q')
         elif move.from_sq == 7 * 8 + 7:
-            state.castling_rights.discard('K')
+            rights.discard('K')
         elif move.from_sq == 0 * 8 + 0:
-            state.castling_rights.discard('q')
+            rights.discard('q')
         elif move.from_sq == 0 * 8 + 7:
-            state.castling_rights.discard('k')
+            rights.discard('k')
     # capture rook affects rights
     if capture:
         if move.to_sq == 7 * 8 + 0:
-            state.castling_rights.discard('Q')
+            rights.discard('Q')
         elif move.to_sq == 7 * 8 + 7:
-            state.castling_rights.discard('K')
+            rights.discard('K')
         elif move.to_sq == 0 * 8 + 0:
-            state.castling_rights.discard('q')
+            rights.discard('q')
         elif move.to_sq == 0 * 8 + 7:
-            state.castling_rights.discard('k')
-    # update en passant target
+            rights.discard('k')
+    mover = state.to_move
+    # en passant square
     if piece.lower() == 'p' and abs(row_to - row_from) == 2:
         ep_row = (row_from + row_to) // 2
-        state.en_passant = ep_row * 8 + col_from
+        state.en_passant = ep_row * 8 + col_to
     else:
         state.en_passant = None
-    # update clocks
+
+    # halfmove clock
     if piece.lower() == 'p' or capture:
         state.halfmove_clock = 0
     else:
         state.halfmove_clock += 1
-    if state.to_move == 'b':
+
+    # fullmove number
+    if mover == 'b':
         state.fullmove_number += 1
+
+    # switch side
     state.to_move = opposite(state.to_move)
+
+    state.castling_rights = ''.join(c for c in "KQkq" if c in rights)
 
 
 def is_checkmate(state: State) -> bool:
