@@ -1,7 +1,7 @@
 """Custom move generation and rule enforcement logic."""
 
 from dataclasses import dataclass
-from typing import List, Optional, Set
+from typing import List, Optional
 
 FILES = 'abcdefgh'
 RANKS = '12345678'
@@ -51,7 +51,7 @@ class Move:
 class State:
     board: List[Optional[str]]  # 64 entries
     to_move: str               # 'w' or 'b'
-    castling_rights: Set[str]
+    castling_rights: str
     en_passant: Optional[int]
     halfmove_clock: int
     fullmove_number: int
@@ -68,7 +68,7 @@ class State:
                     board.extend([None] * int(ch))
                 else:
                     board.append(ch)
-        rights = set(castling) if castling != '-' else set()
+        rights = castling if castling != '-' else ''
         ep_sq = None if ep == '-' else square_index(ep)
         return State(
             board=board,
@@ -84,7 +84,7 @@ class State:
         return State(
             board=self.board[:],
             to_move=self.to_move,
-            castling_rights=set(self.castling_rights),
+            castling_rights=self.castling_rights,
             en_passant=self.en_passant,
             halfmove_clock=self.halfmove_clock,
             fullmove_number=self.fullmove_number,
@@ -355,10 +355,7 @@ def apply_move(state: State, move: Move) -> None:
         elif move.to_sq == 0 * 8 + 0:
             rights.discard('q')
         elif move.to_sq == 0 * 8 + 7:
-
             rights.discard('k')
-
-            state.castling_rights.discard('k')
 
     mover = state.to_move
     # en passant square
@@ -377,10 +374,6 @@ def apply_move(state: State, move: Move) -> None:
     # fullmove number
     if mover == 'b':
         state.fullmove_number += 1
-
-
-    # keep castling rights ordered as set
-    state.castling_rights = {c for c in "KQkq" if c in state.castling_rights}
 
 
     # switch side
